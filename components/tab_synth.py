@@ -33,7 +33,7 @@ def render_synth_tab(df: pd.DataFrame):
         st.success("⚡ Using dynamically aggregated cohort panel from your raw user dataset.")
 
     cols = list(working_df.columns)
-    numeric_cols = [c for c in cols if np.issubdtype(working_df[c].dtype, np.number)]
+    numeric_cols = [c for c in cols if pd.api.types.is_numeric_dtype(working_df[c])]
 
     if not numeric_cols:
         st.info(

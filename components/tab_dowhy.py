@@ -28,7 +28,7 @@ def render_dowhy_tab(df: pd.DataFrame):
         return
 
     cols = list(df.columns)
-    numeric_cols = [c for c in cols if np.issubdtype(df[c].dtype, np.number)]
+    numeric_cols = [c for c in cols if pd.api.types.is_numeric_dtype(df[c])]
 
     if not numeric_cols:
         st.info(

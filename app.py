@@ -213,7 +213,7 @@ else:
 # Schema Auto-Detection and Interactive Column Mapping
 if not current_df.empty:
     all_cols = list(current_df.columns)
-    num_cols = [c for c in all_cols if np.issubdtype(current_df[c].dtype, np.number)]
+    num_cols = [c for c in all_cols if pd.api.types.is_numeric_dtype(current_df[c])]
 
     auto_var = detect_variant_column(current_df)
     auto_out = detect_outcome_column(current_df, exclude_cols=[auto_var] if auto_var else [])

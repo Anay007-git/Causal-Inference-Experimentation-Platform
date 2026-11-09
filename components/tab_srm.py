@@ -269,7 +269,7 @@ def render_srm_tab(df: pd.DataFrame):
     )
 
     categorical_candidates = [
-        c for c in cols if c != variant_col and 2 <= df[c].nunique() <= 20 and not np.issubdtype(df[c].dtype, np.number)
+        c for c in cols if c != variant_col and 2 <= df[c].nunique() <= 20 and not pd.api.types.is_numeric_dtype(df[c])
     ]
     if not categorical_candidates:
         categorical_candidates = [c for c in cols if c != variant_col and 2 <= df[c].nunique() <= 20]

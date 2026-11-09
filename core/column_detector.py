@@ -59,7 +59,7 @@ def detect_variant_column(df: pd.DataFrame) -> Optional[str]:
                 return c
 
     # 4. Fallback: Any low-cardinality categorical column (2 to 4 unique values)
-    low_card = [c for c in cols if 2 <= df[c].nunique(dropna=True) <= 4 and not np.issubdtype(df[c].dtype, np.number)]
+    low_card = [c for c in cols if 2 <= df[c].nunique(dropna=True) <= 4 and not pd.api.types.is_numeric_dtype(df[c])]
     if low_card:
         return low_card[0]
 
@@ -73,7 +73,7 @@ def detect_outcome_column(df: pd.DataFrame, exclude_cols: Optional[List[str]] = 
     if df.empty:
         return None
     exclude_cols = exclude_cols or []
-    numeric_cols = [c for c in df.columns if np.issubdtype(df[c].dtype, np.number) and c not in exclude_cols]
+    numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c]) and c not in exclude_cols]
     if not numeric_cols:
         return None
 
@@ -110,7 +110,7 @@ def detect_baseline_covariate_columns(
     if outcome_col and outcome_col not in exclude_cols:
         exclude_cols.append(outcome_col)
 
-    numeric_cols = [c for c in df.columns if np.issubdtype(df[c].dtype, np.number) and c not in exclude_cols]
+    numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c]) and c not in exclude_cols]
     if not numeric_cols:
         return []
 
@@ -126,7 +126,7 @@ def detect_baseline_covariate_columns(
         return pre_cols
 
     # 2. Correlation ranking with outcome_col
-    if outcome_col and outcome_col in df.columns and np.issubdtype(df[outcome_col].dtype, np.number):
+    if outcome_col and outcome_col in df.columns and pd.api.types.is_numeric_dtype(df[outcome_col]):
         corrs = {}
         for c in numeric_cols:
             try:
@@ -256,7 +256,7 @@ def detect_slice_columns(df: pd.DataFrame, exclude_cols: Optional[List[str]] = N
         if c in exclude_cols:
             continue
         nunique = df[c].nunique(dropna=True)
-        if 2 <= nunique <= 30 and not np.issubdtype(df[c].dtype, np.number):
+        if 2 <= nunique <= 30 and not pd.api.types.is_numeric_dtype(df[c]):
             # Prioritize matching names
             if any(re.search(p, str(c).lower()) for p in preferred_slice_names):
                 candidates.insert(0, c)

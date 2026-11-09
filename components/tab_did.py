@@ -35,7 +35,7 @@ def render_did_tab(df: pd.DataFrame):
             st.rerun()
 
     cols = list(working_df.columns)
-    numeric_cols = [c for c in cols if np.issubdtype(working_df[c].dtype, np.number)]
+    numeric_cols = [c for c in cols if pd.api.types.is_numeric_dtype(working_df[c])]
 
     if not numeric_cols:
         st.info(
