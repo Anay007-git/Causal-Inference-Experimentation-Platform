@@ -6,11 +6,15 @@ Tech Stack: Python, Streamlit, DoWhy, Statsmodels, SciPy, and Plotly.
 Deployable on Vercel, Streamlit Community Cloud, Docker, and Google Cloud Run.
 """
 
+import warnings
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+
+warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import core causal engine and dataset generators
 from core.datasets import (

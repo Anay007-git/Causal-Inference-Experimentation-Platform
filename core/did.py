@@ -237,14 +237,18 @@ def fit_event_study(
     # Exclude reference period (typically k = -1)
     rel_periods = sorted([k for k in data["rel_period"].unique() if k != reference_period_offset])
 
-    # Create dummy interaction terms
+    # Create dummy interaction terms using a single dictionary concat to prevent DataFrame fragmentation
     col_names = []
+    dummy_dict = {}
     for k in rel_periods:
         prefix = f"lead_{abs(k)}" if k < 0 else f"lag_{k}"
         col_name = f"rel_{prefix}"
-        data[col_name] = (data["treat_binary"] == 1) & (data["rel_period"] == k)
-        data[col_name] = data[col_name].astype(int)
+        dummy_dict[col_name] = ((data["treat_binary"] == 1) & (data["rel_period"] == k)).astype(int)
         col_names.append((k, col_name))
+
+    if dummy_dict:
+        dummy_df = pd.DataFrame(dummy_dict, index=data.index)
+        data = pd.concat([data, dummy_df], axis=1)
 
     # OLS regression with time and relative period interaction dummies
     formula = f"{outcome_col} ~ treat_binary + C(rel_period) + " + " + ".join([c[1] for c in col_names])

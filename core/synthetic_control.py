@@ -204,8 +204,10 @@ def run_in_space_placebo_test(
     ratios = [true_ratio]
 
     # Structure to hold gap curves for plotting
-    placebo_gaps_df = pd.DataFrame({"time": times})
-    placebo_gaps_df[treated_unit] = main_res["trajectories"]["causal_gap"]
+    placebo_cols = {
+        "time": times,
+        treated_unit: main_res["trajectories"]["causal_gap"].values,
+    }
 
     for d in donors:
         try:
@@ -222,7 +224,7 @@ def run_in_space_placebo_test(
             p_ratio = p_post_mse / (p_pre_mse + 1e-12)
 
             ratios.append(p_ratio)
-            placebo_gaps_df[f"Placebo_{d}"] = p_res["trajectories"]["causal_gap"]
+            placebo_cols[f"Placebo_{d}"] = p_res["trajectories"]["causal_gap"].values
 
             placebo_results.append({
                 "unit": d,
@@ -232,6 +234,8 @@ def run_in_space_placebo_test(
             })
         except Exception:
             continue
+
+    placebo_gaps_df = pd.DataFrame(placebo_cols)
 
     total_units = len(ratios)
     # Permutation p-value: fraction of units with post/pre MSE ratio >= true treated ratio
